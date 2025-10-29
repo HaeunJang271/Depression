@@ -16,12 +16,12 @@ import {
 
 // Firebase 설정 객체 (실제 값으로 교체해야 합니다)
 const firebaseConfig = {
-  apiKey: "AIzaSy...", // 실제 API 키로 교체
-  authDomain: "your-project.firebaseapp.com", // 실제 도메인으로 교체
-  projectId: "your-project-id", // 실제 프로젝트 ID로 교체
-  storageBucket: "your-project.appspot.com", // 실제 스토리지 버킷으로 교체
-  messagingSenderId: "123456789", // 실제 메시징 ID로 교체
-  appId: "1:123456789:web:abcdef...", // 실제 앱 ID로 교체
+  apiKey: "AIzaSyDIVQzOdsJOlQAn52YQGbQpMZKuPHkfD9I", // 실제 API 키로 교체
+  authDomain: "depression-c5bf2.firebaseapp.com", // 실제 도메인으로 교체
+  projectId: "depression-c5bf2", // 실제 프로젝트 ID로 교체
+  storageBucket: "depression-c5bf2.firebasestorage.app", // 실제 스토리지 버킷으로 교체
+  messagingSenderId: "563591628277", // 실제 메시징 ID로 교체
+  appId: "1:563591628277:web:b0a5c074c044bf4da60cbc", // 실제 앱 ID로 교체
 };
 
 // Firebase 초기화
@@ -74,20 +74,36 @@ export const firestore = {
   // 공개 피드용 글들 가져오기
   async getPublicNotes(limitCount = 20) {
     try {
-      const q = query(
+      console.log("Firestore에서 글 가져오기 시작...");
+
+      // 인덱스 문제를 피하기 위해 간단한 쿼리만 사용
+      console.log("간단한 쿼리로 모든 글 가져오기...");
+      const simpleQuery = query(
         notesCollection,
-        where("deleted", "==", false),
         orderBy("createdAt", "desc"),
         limit(limitCount)
       );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const simpleSnapshot = await getDocs(simpleQuery);
+      console.log("가져온 글 개수:", simpleSnapshot.docs.length, "개");
+
+      // 클라이언트에서 deleted 필드 필터링
+      const notes = simpleSnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((note) => note.deleted !== true); // deleted가 true가 아닌 것만 필터링
+
+      console.log("필터링 후 글 개수:", notes.length, "개");
+      console.log("최종 결과:", notes);
+      return notes;
     } catch (error) {
       console.error("공개 글 가져오기 오류:", error);
-      throw error;
+      console.error("오류 상세:", error.message);
+      console.error("오류 코드:", error.code);
+
+      // 오류가 발생해도 빈 배열 반환하여 앱이 중단되지 않도록
+      return [];
     }
   },
 

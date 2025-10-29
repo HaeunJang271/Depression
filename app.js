@@ -19,9 +19,44 @@ let currentPostId = null;
 
 // 초기화
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('페이지 로드 완료');
+    console.log('bubbles 요소:', document.getElementById('bubbles'));
     loadBubbles();
     setupEventListeners();
+    
+    // 테스트용 샘플 데이터 추가 (데이터가 없을 때만)
+    addSampleDataIfEmpty();
 });
+
+// 샘플 데이터 추가 (데이터가 없을 때만)
+async function addSampleDataIfEmpty() {
+    try {
+        const notes = await firestore.getPublicNotes(1);
+        if (notes.length === 0) {
+            console.log('데이터가 없어서 샘플 데이터 추가 중...');
+            
+            const sampleNotes = [
+                "오늘은 정말 힘든 하루였어요. 하지만 이렇게 글을 쓰니 마음이 조금 나아지네요.",
+                "새로운 시작이 두려워요. 하지만 한 걸음씩 나아가고 있어요.",
+                "혼자 있는 시간이 많아졌어요. 조용한 시간이 좋기도 하고 외롭기도 해요.",
+                "오늘 하늘을 보니 마음이 편안해졌어요. 작은 것들에 감사하게 되네요.",
+                "힘들 때마다 이곳에 와서 마음을 정리해요. 정말 도움이 되네요."
+            ];
+            
+            for (const content of sampleNotes) {
+                await firestore.saveNote(content);
+                console.log('샘플 글 추가:', content.substring(0, 20) + '...');
+            }
+            
+            console.log('샘플 데이터 추가 완료! 페이지를 새로고침합니다.');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('샘플 데이터 추가 실패:', error);
+    }
+}
 
 // 이벤트 리스너 설정
 function setupEventListeners() {
@@ -171,11 +206,20 @@ function showWritingArea() {
 // 버블 로드
 async function loadBubbles() {
     try {
+        console.log('버블 로드 시작...');
         const notes = await firestore.getPublicNotes(12);
+        console.log('가져온 글 개수:', notes.length);
+        
+        if (!bubbles) {
+            console.error('bubbles 요소를 찾을 수 없습니다!');
+            return;
+        }
+        
         bubbles.innerHTML = '';
         
         if (notes.length === 0) {
-            bubbles.innerHTML = '<p style="color: #64748b; text-align: center; padding: 2rem; grid-column: 1 / -1;">아직 공개된 글이 없습니다.</p>';
+            bubbles.innerHTML = '<p style="color: #64748b; text-align: center; padding: 2rem;">아직 공개된 글이 없습니다.</p>';
+            console.log('공개된 글이 없어서 메시지 표시');
             return;
         }
         
@@ -184,8 +228,13 @@ async function loadBubbles() {
             bubbles.appendChild(bubbleElement);
         });
         
+        console.log('버블 로드 완료');
+        
     } catch (error) {
         console.error('버블 로드 실패:', error);
+        if (bubbles) {
+            bubbles.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 2rem;">글을 불러오는데 실패했습니다.</p>';
+        }
     }
 }
 

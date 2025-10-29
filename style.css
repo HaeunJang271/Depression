@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
   background: linear-gradient(135deg, #0b0f14 0%, #0f1520 100%);
   color: #e2e8f0;
@@ -57,11 +57,13 @@ body {
 
 .bubbles {
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
-  justify-content: center;
   align-items: flex-start;
   padding: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bubble {
@@ -69,7 +71,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 1rem 1.5rem;
+  min-width: 250px;
   max-width: 300px;
+  flex-shrink: 0;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -366,7 +370,8 @@ body {
   }
 
   .bubble {
-    max-width: 100%;
+    min-width: 200px;
+    max-width: 250px;
     padding: 0.75rem 1rem;
   }
 
