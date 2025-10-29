@@ -36,7 +36,10 @@ export const firestore = {
   // 새 글 저장
   async saveNote(content) {
     try {
-      const docRef = await addDoc(notesCollection, {
+      console.log("Firestore에 글 저장 시작:", content);
+      console.log("컬렉션 참조:", notesCollection);
+
+      const noteData = {
         content: content,
         createdAt: new Date(),
         reactions: {
@@ -47,10 +50,18 @@ export const firestore = {
           heart: 0,
         },
         deleted: false,
-      });
+      };
+
+      console.log("저장할 데이터:", noteData);
+
+      const docRef = await addDoc(notesCollection, noteData);
+      console.log("저장 성공! 문서 ID:", docRef.id);
+
       return docRef.id;
     } catch (error) {
       console.error("글 저장 오류:", error);
+      console.error("오류 상세:", error.message);
+      console.error("오류 코드:", error.code);
       throw error;
     }
   },

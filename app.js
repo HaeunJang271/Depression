@@ -102,15 +102,18 @@ async function savePost() {
     }
     
     try {
+        console.log('글 저장 시작:', content);
         saveBtn.textContent = '저장 중...';
         saveBtn.disabled = true;
         
         const noteId = await firestore.saveNote(content);
+        console.log('Firestore에 저장된 ID:', noteId);
         
         // localStorage에 내 글 ID 저장
         const myPostIds = JSON.parse(localStorage.getItem('myPostIds') || '[]');
         myPostIds.push(noteId);
         localStorage.setItem('myPostIds', JSON.stringify(myPostIds));
+        console.log('localStorage에 저장된 ID 목록:', myPostIds);
         
         // 입력창 초기화
         contentInput.value = '';
@@ -118,10 +121,14 @@ async function savePost() {
         // 저장된 글 보기
         await showPost(noteId);
         
+        // 버블 새로고침
+        loadBubbles();
+        
         alert('글이 저장되었습니다!');
         
     } catch (error) {
         console.error('글 저장 실패:', error);
+        console.error('오류 상세:', error.message);
         alert('글 저장에 실패했습니다. 다시 시도해주세요.');
     } finally {
         saveBtn.textContent = '저장';
