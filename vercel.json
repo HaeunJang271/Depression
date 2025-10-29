@@ -1,7 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/((?!.*\\.).*)$",
+      // Exclude API routes, Next/Vercel assets, and any request containing a dot (file extensions)
+      "source": "/((?!api/|_next/|.*\..*).*)",
       "destination": "/index.html"
     }
   ]
