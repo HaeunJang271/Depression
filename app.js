@@ -14,6 +14,10 @@ const shareBtn = document.getElementById('shareBtn');
 // Firebase 함수들
 import { firestore } from './firebase-config.js';
 
+// Firebase 연결 확인
+console.log('Firebase firestore 객체:', firestore);
+console.log('Firebase 함수들:', Object.keys(firestore));
+
 // 현재 보고 있는 글 ID
 let currentPostId = null;
 
