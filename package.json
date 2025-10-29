@@ -1,0 +1,18 @@
+{
+  "name": "depression-memo",
+  "version": "1.0.0",
+  "description": "우울 메모 - 감정 기록 웹사이트",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^10.7.1"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  },
+  "type": "module"
+}

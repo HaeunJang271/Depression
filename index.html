@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>어디서부터 시작할까요? - 우울 메모</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 영역 -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>어디서부터 시작할까요?</h1>
+                <p class="subtitle">마음이 복잡할 때 부담 없이 적어보세요</p>
+            </header>
+
+            <!-- 다른 사람들의 글 버블 -->
+            <div class="bubbles-container" id="bubblesContainer">
+                <div class="bubbles" id="bubbles">
+                    <!-- 다른 사람들의 글이 말풍선으로 여기에 표시됩니다 -->
+                </div>
+            </div>
+
+            <!-- 글쓰기 영역 -->
+            <div class="writing-area" id="writingArea">
+                <textarea 
+                    id="contentInput" 
+                    placeholder="무엇이든 적어보세요..."
+                    rows="8"
+                ></textarea>
+                <div class="writing-actions">
+                    <button id="saveBtn" class="save-btn">저장</button>
+                    <button id="copyLinkBtn" class="copy-link-btn" style="display: none;">링크 복사</button>
+                </div>
+            </div>
+
+            <!-- 글 보기 영역 -->
+            <div class="post-view" id="postView" style="display: none;">
+                <div class="post-header">
+                    <button id="newPostBtn" class="new-post-btn-top">새 글 작성</button>
+                </div>
+                <div class="post-content" id="postContent"></div>
+                <div class="post-actions">
+                    <div class="reactions" id="reactions">
+                        <button class="reaction-btn" data-emoji="😊" data-type="smile">😊</button>
+                        <button class="reaction-btn" data-emoji="😢" data-type="sad">😢</button>
+                        <button class="reaction-btn" data-emoji="😐" data-type="neutral">😐</button>
+                        <button class="reaction-btn" data-emoji="💭" data-type="thought">💭</button>
+                        <button class="reaction-btn" data-emoji="❤️" data-type="heart">❤️</button>
+                    </div>
+                    <div class="reaction-counts" id="reactionCounts"></div>
+                    <button id="shareBtn" class="share-btn">공유하기</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 위기 도움 안내 -->
+    <footer class="crisis-footer">
+        <p>위기 상황이시라면 <strong>1393</strong> (자살예방상담전화) 또는 <strong>112</strong> (경찰청)로 연락하세요</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
