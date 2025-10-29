@@ -83,11 +83,19 @@ function setupEventListeners() {
     // 공유 버튼
     shareBtn.addEventListener('click', sharePost);
     
-    // 반응 버튼들
-    reactions.addEventListener('click', (e) => {
+    // 반응 버튼들 - 가장 간단한 방법
+    document.addEventListener('click', (e) => {
+        console.log('클릭된 요소:', e.target);
+        console.log('클래스 목록:', e.target.classList);
+        
         if (e.target.classList.contains('reaction-btn')) {
+            console.log('✅ 반응 버튼 클릭됨!');
             const reactionType = e.target.dataset.type;
+            console.log('반응 타입:', reactionType);
+            
             addReaction(reactionType);
+        } else {
+            console.log('❌ 반응 버튼이 아님');
         }
     });
     
@@ -151,6 +159,10 @@ async function showPost(noteId) {
         // 반응 수 표시
         displayReactions(note.reactions);
         
+        // 사용자의 반응 상태로 버튼 업데이트
+        const userReactions = JSON.parse(localStorage.getItem(`reactions_${currentPostId}`) || '{}');
+        updateReactionButtons(userReactions);
+        
         // 글 보기 영역 표시
         writingArea.style.display = 'none';
         postView.style.display = 'block';
@@ -165,6 +177,8 @@ async function showPost(noteId) {
 // 반응 표시
 function displayReactions(reactions) {
     reactionCounts.innerHTML = '';
+    
+    console.log('displayReactions - reactions:', reactions);
     
     Object.entries(reactions).forEach(([type, count]) => {
         if (count > 0) {
@@ -184,20 +198,75 @@ function displayReactions(reactions) {
     });
 }
 
-// 반응 추가
+// 반응 버튼 상태 업데이트
+function updateReactionButtons(userReactions) {
+    const reactionButtons = document.querySelectorAll('.reaction-btn');
+    console.log('updateReactionButtons - 버튼 개수:', reactionButtons.length);
+    console.log('updateReactionButtons - userReactions:', userReactions);
+    
+    reactionButtons.forEach(button => {
+        const reactionType = button.dataset.type;
+        const isActive = userReactions[reactionType] || false;
+        
+        console.log(`버튼 ${reactionType}: ${isActive ? '활성' : '비활성'}`);
+        
+        if (isActive) {
+            button.classList.add('reaction-active');
+        } else {
+            button.classList.remove('reaction-active');
+        }
+    });
+}
+
+// 반응 추가/제거 (토글)
 async function addReaction(reactionType) {
-    if (!currentPostId) return;
+    console.log('=== addReaction 함수 시작 ===');
+    console.log('reactionType:', reactionType);
+    console.log('currentPostId:', currentPostId);
+    
+    if (!currentPostId) {
+        console.log('❌ currentPostId가 없습니다!');
+        return;
+    }
     
     try {
-        await firestore.addReaction(currentPostId, reactionType);
+        // 현재 사용자의 반응 상태 확인
+        const userReactions = JSON.parse(localStorage.getItem(`reactions_${currentPostId}`) || '{}');
+        const hasReacted = userReactions[reactionType] || false;
+        
+        console.log('현재 반응 상태:', userReactions);
+        console.log('이미 반응했는가:', hasReacted);
+        
+        if (hasReacted) {
+            // 이미 반응한 경우 제거
+            console.log('🔄 반응 제거 중...');
+            await firestore.removeReaction(currentPostId, reactionType);
+            userReactions[reactionType] = false;
+            console.log('✅ 반응 제거 완료');
+        } else {
+            // 반응 추가
+            console.log('➕ 반응 추가 중...');
+            await firestore.addReaction(currentPostId, reactionType);
+            userReactions[reactionType] = true;
+            console.log('✅ 반응 추가 완료');
+        }
+        
+        // 사용자 반응 상태 저장
+        localStorage.setItem(`reactions_${currentPostId}`, JSON.stringify(userReactions));
+        console.log('💾 저장된 반응 상태:', userReactions);
+        
+        // 즉시 UI 업데이트
+        updateReactionButtons(userReactions);
         
         // 현재 글 다시 로드
         const note = await firestore.getNoteById(currentPostId);
         displayReactions(note.reactions);
         
+        console.log('=== addReaction 함수 완료 ===');
+        
     } catch (error) {
-        console.error('반응 추가 실패:', error);
-        alert('반응 추가에 실패했습니다.');
+        console.error('❌ 반응 처리 실패:', error);
+        alert('반응 처리에 실패했습니다: ' + error.message);
     }
 }
 

@@ -130,6 +130,19 @@ export const firestore = {
       throw error;
     }
   },
+
+  // 반응 제거
+  async removeReaction(noteId, reactionType) {
+    try {
+      const noteRef = doc(db, "notes", noteId);
+      await updateDoc(noteRef, {
+        [`reactions.${reactionType}`]: increment(-1),
+      });
+    } catch (error) {
+      console.error("반응 제거 오류:", error);
+      throw error;
+    }
+  },
 };
 
 export default db;
